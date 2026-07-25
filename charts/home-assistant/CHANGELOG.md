@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.8](https://github.com/TobiasGoetz/helm-charts/compare/home-assistant-v1.2.7...home-assistant-v1.2.8) (2026-07-25)
+
+
+### Bug Fixes
+
+* implement custom mapping of charts to page ([f4adddd](https://github.com/TobiasGoetz/helm-charts/commit/f4adddd73c46ffc750dc3d2f0c5903858c374e78))
+
 ## [1.2.7](https://github.com/TobiasGoetz/helm-charts/compare/home-assistant-v1.2.6...home-assistant-v1.2.7) (2026-07-25)
 
 
