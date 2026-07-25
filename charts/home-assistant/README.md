@@ -8,7 +8,7 @@ See [values.yaml](values.yaml) for all options.
 
 <!-- x-release-please-start-version -->
 ```bash
-helm install home-assistant oci://ghcr.io/tobiasgoetz/helm-charts/home-assistant --version 1.2.7 \
+helm install home-assistant oci://ghcr.io/tobiasgoetz/helm-charts/home-assistant --version 1.2.8 \
   -n home-assistant --create-namespace \
   -f values.yaml
 ```
