@@ -104,13 +104,20 @@ jobs:
           done
           ls -la .cr-release-packages
 
-      - name: Publish index to GitHub Pages
+      - name: Upload packages and publish index to GitHub Pages
         env:
           CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           owner="${{ github.repository_owner }}"
           repo="${GITHUB_REPOSITORY#*/}"
+          # cr index only adds charts that exist as .tgz assets on GitHub Releases
+          cr upload \
+            --owner "$owner" \
+            --git-repo "$repo" \
+            --package-path .cr-release-packages \
+            --release-name-template "{{ .Name }}-v{{ .Version }}" \
+            --skip-existing
           cr index \
             --owner "$owner" \
             --git-repo "$repo" \
