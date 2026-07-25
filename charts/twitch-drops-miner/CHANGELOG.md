@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.1](https://github.com/TobiasGoetz/helm-charts/compare/twitch-drops-miner-v1.2.0...twitch-drops-miner-v1.2.1) (2026-07-25)
+
+
+### Bug Fixes
+
+* publish pages using incorrect tag ([1ff470f](https://github.com/TobiasGoetz/helm-charts/commit/1ff470f79f50b06ae238a20cd24ef2f85f58caae))
+
 ## [1.2.0](https://github.com/TobiasGoetz/helm-charts/compare/twitch-drops-miner-v1.1.3...twitch-drops-miner-v1.2.0) (2026-07-25)
 
 

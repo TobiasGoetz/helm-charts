@@ -8,7 +8,7 @@ Creates the Cloudflare API token Secret and a ClusterIssuer. Requires [cert-mana
 
 <!-- x-release-please-start-version -->
 ```bash
-helm install cloudflare-acme-issuer oci://ghcr.io/tobiasgoetz/helm-charts/cloudflare-acme-issuer --version 1.2.0 \
+helm install cloudflare-acme-issuer oci://ghcr.io/tobiasgoetz/helm-charts/cloudflare-acme-issuer --version 1.2.1 \
   --set issuerSecret.apiToken="CHANGEME" \
   --set issuer.acme.email="admin@example.com" \
   --set issuer.acme.solver.email="admin@example.com"
