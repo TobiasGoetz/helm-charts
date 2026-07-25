@@ -4,8 +4,6 @@ updates:
     directory: "/"
     schedule:
       interval: daily
-    labels:
-      - "dependencies"
     commit-message:
       prefix: deps
 
@@ -13,8 +11,6 @@ updates:
     directory: "/charts/blocky"
     schedule:
       interval: daily
-    labels:
-      - "dependencies"
     commit-message:
       prefix: "deps(blocky)"
 
@@ -22,8 +18,6 @@ updates:
     directory: "/charts/cloudflare-acme-issuer"
     schedule:
       interval: daily
-    labels:
-      - "dependencies"
     commit-message:
       prefix: "deps(cloudflare-acme-issuer)"
 
@@ -31,8 +25,6 @@ updates:
     directory: "/charts/home-assistant"
     schedule:
       interval: daily
-    labels:
-      - "dependencies"
     commit-message:
       prefix: "deps(home-assistant)"
 
@@ -40,7 +32,5 @@ updates:
     directory: "/charts/twitch-drops-miner"
     schedule:
       interval: daily
-    labels:
-      - "dependencies"
     commit-message:
       prefix: "deps(twitch-drops-miner)"
