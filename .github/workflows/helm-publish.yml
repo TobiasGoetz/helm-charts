@@ -42,10 +42,10 @@ jobs:
         run: |
           name=$(basename "${{ matrix.chart }}")
           version=$(awk '/^version:/ { print $2; exit }' "${{ matrix.chart }}/Chart.yaml" | tr -d '"')
-          mkdir -p .helm-packages
-          helm package "${{ matrix.chart }}" -d .helm-packages
-          package=".helm-packages/${name}-${version}.tgz"
-          ls -la .helm-packages
+          mkdir -p helm-packages
+          helm package "${{ matrix.chart }}" -d helm-packages
+          package="helm-packages/${name}-${version}.tgz"
+          ls -la helm-packages
           echo "Uploading ${package} to release ${name}-v${version}"
           gh release upload "${name}-v${version}" "$package" --clobber
           echo "name=${name}" >> "$GITHUB_OUTPUT"
@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: chart-package-${{ steps.package.outputs.name }}
-          path: .helm-packages/*.tgz
+          path: helm-packages/*.tgz
           if-no-files-found: error
 
   publish-oci:
@@ -73,7 +73,7 @@ jobs:
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           name: chart-package-${{ steps.chart.outputs.name }}
-          path: .helm-packages
+          path: helm-packages
 
       - name: Install Helm
         uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310
@@ -93,7 +93,7 @@ jobs:
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
           name="${{ steps.chart.outputs.name }}"
           shopt -s nullglob
-          packages=(.helm-packages/"${name}"-*.tgz)
+          packages=(helm-packages/"${name}"-*.tgz)
           if [ "${#packages[@]}" -ne 1 ]; then
             echo "expected exactly one package for ${name}, found: ${packages[*]-none}"
             exit 1
@@ -123,7 +123,7 @@ jobs:
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
           pattern: chart-package-*
-          path: .helm-packages
+          path: helm-packages
           merge-multiple: true
 
       - name: Install chart-releaser
@@ -139,6 +139,6 @@ jobs:
             --owner "${{ github.repository_owner }}" \
             --git-repo "${GITHUB_REPOSITORY#*/}" \
             --pages-branch gh-pages \
-            --package-path .helm-packages \
+            --package-path helm-packages \
             --release-name-template "{{ .Name }}-v{{ .Version }}" \
             --push
