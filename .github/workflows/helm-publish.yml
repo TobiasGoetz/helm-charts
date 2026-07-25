@@ -35,8 +35,13 @@ jobs:
         with:
           version: "v3.14.0"
 
+      - name: Install crane
+        uses: imjasonh/setup-crane@feee3b6bb0d4c68370f256a4502498c9227e5c6b # v0.7
+
       - name: Log in to GHCR
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
+          echo "${{ secrets.GITHUB_TOKEN }}" | crane auth login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
 
       - name: Package and push chart
         run: |
@@ -46,4 +51,6 @@ jobs:
           helm package "$chartPath"
           name=$(basename "$chartPath")
           version=$(awk '/^version:/ { print $2; exit }' "$chartPath/Chart.yaml" | tr -d '"')
+          ref="ghcr.io/${OWNER}/helm-charts/${name}"
           helm push "${name}-${version}.tgz" "oci://ghcr.io/${OWNER}/helm-charts"
+          crane tag "${ref}:${version}" latest
