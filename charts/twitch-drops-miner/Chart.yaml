@@ -5,6 +5,6 @@ description: A Helm chart for twitch-drops-miner on Kubernetes
 
 type: application
 
-version: 1.2.3
+version: 1.2.4
 
 appVersion: "latest"
