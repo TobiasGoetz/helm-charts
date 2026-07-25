@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/TobiasGoetz/helm-charts/compare/twitch-drops-miner-v1.1.2...twitch-drops-miner-v1.1.3) (2026-07-25)
+
+
+### Bug Fixes
+
+* trigger release ([5467989](https://github.com/TobiasGoetz/helm-charts/commit/546798914833e753cd73842b74eea5fc5a96a478))
+
 ## [1.1.2](https://github.com/TobiasGoetz/helm-charts/compare/twitch-drops-miner-v1.1.1...twitch-drops-miner-v1.1.2) (2026-07-25)
 
 
