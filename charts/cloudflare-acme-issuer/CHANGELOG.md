@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/TobiasGoetz/helm-charts/compare/cloudflare-acme-issuer-v1.2.1...cloudflare-acme-issuer-v1.2.2) (2026-07-25)
+
+
+### Bug Fixes
+
+* checkout depth on publish ([993a92c](https://github.com/TobiasGoetz/helm-charts/commit/993a92c52c830cb0b15b32dde260909b134949ac))
+
 ## [1.2.1](https://github.com/TobiasGoetz/helm-charts/compare/cloudflare-acme-issuer-v1.2.0...cloudflare-acme-issuer-v1.2.1) (2026-07-25)
 
 
