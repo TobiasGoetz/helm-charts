@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.6](https://github.com/TobiasGoetz/helm-charts/compare/cloudflare-acme-issuer-v1.2.5...cloudflare-acme-issuer-v1.2.6) (2026-07-25)
+
+
+### Bug Fixes
+
+* precreate index file ([ecb0d5d](https://github.com/TobiasGoetz/helm-charts/commit/ecb0d5de2c7b66977126b54044073e15be426993))
+
 ## [1.2.5](https://github.com/TobiasGoetz/helm-charts/compare/cloudflare-acme-issuer-v1.2.4...cloudflare-acme-issuer-v1.2.5) (2026-07-25)
 
 
