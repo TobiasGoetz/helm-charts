@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.4](https://github.com/TobiasGoetz/helm-charts/compare/twitch-drops-miner-v1.2.3...twitch-drops-miner-v1.2.4) (2026-07-25)
+
+
+### Bug Fixes
+
+* extract package step on publish ([e08230e](https://github.com/TobiasGoetz/helm-charts/commit/e08230ef147730c09697e13b508ce572e65eb767))
+
 ## [1.2.3](https://github.com/TobiasGoetz/helm-charts/compare/twitch-drops-miner-v1.2.2...twitch-drops-miner-v1.2.3) (2026-07-25)
 
 
