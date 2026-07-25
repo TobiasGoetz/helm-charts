@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.9](https://github.com/TobiasGoetz/helm-charts/compare/cloudflare-acme-issuer-v1.2.8...cloudflare-acme-issuer-v1.2.9) (2026-07-25)
+
+
+### Bug Fixes
+
+* add caching and aprallelism for github page ([f568e56](https://github.com/TobiasGoetz/helm-charts/commit/f568e56e2c11d4dfa1a0d8c8a08db6f68387fca7))
+
 ## [1.2.8](https://github.com/TobiasGoetz/helm-charts/compare/cloudflare-acme-issuer-v1.2.7...cloudflare-acme-issuer-v1.2.8) (2026-07-25)
 
 
