@@ -12,7 +12,7 @@ permissions:
   packages: write
   pages: write
   id-token: write
-  actions: read
+  actions: write
 
 jobs:
   release-please:
