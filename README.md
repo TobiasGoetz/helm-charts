@@ -2,7 +2,10 @@
 
 Homelab Helm charts (wrappers and small app charts).
 
-Published to GHCR as OCI artifacts: `oci://ghcr.io/tobiasgoetz/helm-charts/<chart>`.
+Published two ways:
+
+- **Classic Helm repo** (GitHub Pages): `https://tobiasgoetz.github.io/helm-charts`
+- **OCI** (GHCR): `oci://ghcr.io/tobiasgoetz/helm-charts/<chart>`
 
 ## Charts
 
@@ -15,11 +18,24 @@ Published to GHCR as OCI artifacts: `oci://ghcr.io/tobiasgoetz/helm-charts/<char
 
 ## Install
 
+### Classic repo (`helm repo add`)
+
+```bash
+helm repo add tobiasgoetz https://tobiasgoetz.github.io/helm-charts
+helm repo update
+helm upgrade --install blocky tobiasgoetz/blocky \
+  --version <version> \
+  -n blocky --create-namespace \
+  -f ../homelab/helm/values/blocky.yaml
+```
+
+### OCI (GHCR)
+
 ```bash
 helm install <release> oci://ghcr.io/tobiasgoetz/helm-charts/<chart> --version <version>
 ```
 
-Example with values from a sibling `homelab` checkout:
+Example:
 
 ```bash
 helm upgrade --install blocky oci://ghcr.io/tobiasgoetz/helm-charts/blocky \
@@ -28,13 +44,9 @@ helm upgrade --install blocky oci://ghcr.io/tobiasgoetz/helm-charts/blocky \
   -f ../homelab/helm/values/blocky.yaml
 ```
 
-Local path install (dev):
+### Local path (dev)
 
 ```bash
 helm upgrade --install blocky ./charts/blocky -n blocky --create-namespace \
   -f ../homelab/helm/values/blocky.yaml
 ```
-
-## Release
-
-Releases use **Release Please** (conventional commits on `main`). Merging a release PR bumps each chart’s `Chart.yaml` and chart README version, creates a GitHub Release, and pushes the chart to GHCR via `.github/workflows/helm-publish.yml`.

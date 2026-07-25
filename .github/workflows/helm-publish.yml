@@ -1,7 +1,7 @@
 name: "Helm Publish"
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 on:
@@ -20,7 +20,7 @@ on:
         default: '[]'
 
 jobs:
-  publish:
+  publish-oci:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -54,3 +54,63 @@ jobs:
           ref="ghcr.io/${OWNER}/helm-charts/${name}"
           helm push "${name}-${version}.tgz" "oci://ghcr.io/${OWNER}/helm-charts"
           crane tag "${ref}:${version}" latest
+
+  publish-pages:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - name: Install Helm
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310
+        with:
+          version: "v3.14.0"
+
+      - name: Install chart-releaser
+        uses: helm/chart-releaser-action@cae68fefc6b5f367a0275617c9f83181ba54714f # v1.7.0
+        with:
+          install_only: true
+
+      - name: Ensure gh-pages branch
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --heads origin gh-pages; then
+            echo "gh-pages already exists"
+            exit 0
+          fi
+          current=$(git rev-parse HEAD)
+          git checkout --orphan gh-pages
+          git reset --hard
+          git commit --allow-empty -m "Initialize gh-pages"
+          git push origin gh-pages
+          git checkout --force "$current"
+
+      - name: Package charts
+        run: |
+          set -euo pipefail
+          mkdir -p .cr-release-packages
+          echo '${{ inputs.paths }}' | jq -r '.[]' | while read -r chartPath; do
+            echo "Packaging $chartPath"
+            helm package "$chartPath" -d .cr-release-packages
+          done
+          ls -la .cr-release-packages
+
+      - name: Publish index to GitHub Pages
+        env:
+          CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          repo="${GITHUB_REPOSITORY#*/}"
+          cr index \
+            --owner "$owner" \
+            --git-repo "$repo" \
+            --pages-branch gh-pages \
+            --package-path .cr-release-packages \
+            --packages-with-index \
+            --push
