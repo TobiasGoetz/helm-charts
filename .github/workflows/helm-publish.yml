@@ -5,7 +5,7 @@ permissions:
   packages: write
   pages: write
   id-token: write
-  actions: read
+  actions: write
 
 on:
   workflow_call:
@@ -114,37 +114,99 @@ jobs:
         with:
           version: "v3.14.0"
 
-      - name: Build chart repository from releases
+      - name: Restore site cache
+        id: site-cache
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: site
+          key: helm-pages-site-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            helm-pages-site-
+
+      - name: Download new chart packages
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: chart-package-*
+          path: new-packages
+          merge-multiple: true
+
+      - name: Detect cache state
+        id: cache-state
+        run: |
+          mkdir -p site
+          if [[ -f site/index.yaml ]]; then
+            echo "hit=true" >> "$GITHUB_OUTPUT"
+            echo "Cache hit: found site/index.yaml"
+          else
+            echo "hit=false" >> "$GITHUB_OUTPUT"
+            echo "Cache miss: no site/index.yaml"
+          fi
+
+      - name: Add new packages to site
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          new_packages=(new-packages/*.tgz)
+          if (( ${#new_packages[@]} == 0 )); then
+            echo "no new chart packages downloaded"
+            exit 1
+          fi
+          cp -f "${new_packages[@]}" site/
+          ls -la site/*.tgz
+
+      - name: Merge into cached chart repository
+        if: steps.cache-state.outputs.hit == 'true'
+        run: |
+          set -euo pipefail
+          owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          repo="${{ github.repository }}"
+          url="https://${owner}.github.io/${repo#*/}"
+          cp site/index.yaml /tmp/index.yaml
+          helm repo index site --url "$url" --merge /tmp/index.yaml
+          ls -la site
+
+      - name: Rebuild chart repository from releases
+        if: steps.cache-state.outputs.hit != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-
           repo="${{ github.repository }}"
-          mkdir -p site
+          owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          url="https://${owner}.github.io/${repo#*/}"
 
           mapfile -t tags < <(
             gh api --paginate "repos/${repo}/releases" --jq '.[].tag_name'
           )
-
-          for tag in "${tags[@]}"; do
-            gh release download "$tag" \
-              --repo "$repo" \
-              --pattern '*.tgz' \
-              --dir site \
-              --clobber || true
-          done
+          if (( ${#tags[@]} > 0 )); then
+            printf '%s\n' "${tags[@]}" | xargs -P 8 -I {} \
+              gh release download {} \
+                --repo "$repo" \
+                --pattern '*.tgz' \
+                --dir site \
+                --clobber || true
+          fi
 
           shopt -s nullglob
+          new_packages=(new-packages/*.tgz)
+          if (( ${#new_packages[@]} > 0 )); then
+            cp -f "${new_packages[@]}" site/
+          fi
+
           packages=(site/*.tgz)
           if (( ${#packages[@]} == 0 )); then
-            echo "no chart packages found on releases"
+            echo "no chart packages found"
             exit 1
           fi
 
-          owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          helm repo index site --url "https://${owner}.github.io/${repo#*/}"
+          helm repo index site --url "$url"
           ls -la site
+
+      - name: Save site cache
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: site
+          key: helm-pages-site-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Configure Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
