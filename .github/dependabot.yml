@@ -16,7 +16,7 @@ updates:
     labels:
       - "dependencies"
     commit-message:
-      prefix: deps
+      prefix: "deps(blocky)"
 
   - package-ecosystem: helm
     directory: "/charts/cloudflare-acme-issuer"
@@ -25,7 +25,7 @@ updates:
     labels:
       - "dependencies"
     commit-message:
-      prefix: deps
+      prefix: "deps(cloudflare-acme-issuer)"
 
   - package-ecosystem: helm
     directory: "/charts/home-assistant"
@@ -34,7 +34,7 @@ updates:
     labels:
       - "dependencies"
     commit-message:
-      prefix: deps
+      prefix: "deps(home-assistant)"
 
   - package-ecosystem: helm
     directory: "/charts/twitch-drops-miner"
@@ -43,4 +43,4 @@ updates:
     labels:
       - "dependencies"
     commit-message:
-      prefix: deps
+      prefix: "deps(twitch-drops-miner)"
