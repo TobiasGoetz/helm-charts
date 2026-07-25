@@ -5,7 +5,7 @@ updates:
     schedule:
       interval: daily
     commit-message:
-      prefix: deps
+      prefix: ci
 
   - package-ecosystem: helm
     directory: "/charts/blocky"
