@@ -1,0 +1,26 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`{{ .Values.ingress.host }}`)
+      kind: Rule
+      services:
+        - name: {{ .Release.Name }}-blocky-http
+          port: {{ .Values.ingress.port }}
+      middlewares:
+        - name: {{ .Values.auth.authentik.middleware.name }}
+          namespace: {{ .Values.auth.authentik.middleware.namespace }}
+    - match: Host(`{{ .Values.ingress.host }}`) && PathPrefix(`/outpost.goauthentik.io/`)
+      kind: Rule
+      services:
+        - name: {{ .Values.auth.authentik.outpostService.name }}
+          namespace: {{ .Values.auth.authentik.outpostService.namespace }}
+          port: {{ .Values.auth.authentik.outpostService.port }}
+  tls:
+    secretName: {{ .Release.Name }}-tls
+{{- end }}

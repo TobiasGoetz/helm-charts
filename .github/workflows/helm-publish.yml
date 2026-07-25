@@ -1,0 +1,39 @@
+name: "Helm Publish"
+
+permissions:
+  contents: read
+  packages: write
+
+on:
+  workflow_call:
+    inputs:
+      paths:
+        description: JSON array of released chart paths
+        type: string
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
+
+      - name: Install Helm
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310
+        with:
+          version: "v3.14.0"
+
+      - name: Log in to GHCR
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u ${{ github.repository_owner }} --password-stdin
+
+      - name: Package and push charts
+        run: |
+          set -euo pipefail
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo '${{ inputs.paths }}' | jq -r '.[]' | while read -r chartPath; do
+            helm package "$chartPath"
+            name=$(basename "$chartPath")
+            version=$(awk '/^version:/ { print $2; exit }' "$chartPath/Chart.yaml" | tr -d '"')
+            helm push "${name}-${version}.tgz" "oci://ghcr.io/${OWNER}/helm-charts"
+          done

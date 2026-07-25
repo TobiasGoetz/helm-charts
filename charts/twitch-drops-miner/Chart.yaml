@@ -1,0 +1,10 @@
+apiVersion: v2
+name: twitch-drops-miner
+description: A Helm chart for twitch-drops-miner on Kubernetes
+
+type: application
+
+version: 1.0.0
+
+appVersion: "latest"
+

@@ -1,0 +1,14 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ .Release.Name }}-tls
+spec:
+  secretName: {{ .Release.Name }}-tls
+  dnsNames:
+    - {{ .Values.ingress.host | quote }}
+  issuerRef:
+    name: {{ .Values.ingress.issuerName | default "cloudflare" }}
+    kind: ClusterIssuer
+{{- end }}
+

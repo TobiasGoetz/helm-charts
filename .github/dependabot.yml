@@ -1,0 +1,46 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: daily
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: deps
+
+  - package-ecosystem: helm
+    directory: "/charts/blocky"
+    schedule:
+      interval: daily
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: deps
+
+  - package-ecosystem: helm
+    directory: "/charts/cloudflare-acme-issuer"
+    schedule:
+      interval: daily
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: deps
+
+  - package-ecosystem: helm
+    directory: "/charts/home-assistant"
+    schedule:
+      interval: daily
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: deps
+
+  - package-ecosystem: helm
+    directory: "/charts/twitch-drops-miner"
+    schedule:
+      interval: daily
+    labels:
+      - "dependencies"
+    commit-message:
+      prefix: deps

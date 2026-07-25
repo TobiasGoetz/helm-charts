@@ -1,0 +1,10 @@
+apiVersion: v2
+name: blocky
+description: DNS proxy as ad-blocker for local network
+keywords:
+  - blocky
+  - adblock
+  - dns
+type: application
+version: 1.0.0
+appVersion: "v0.29"

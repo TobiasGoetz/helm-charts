@@ -1,0 +1,133 @@
+replicaCount: 1
+
+# Share the node LAN for mDNS (Thread border routers, Matter, SSDP, etc.).
+# When true, dnsPolicy is set to ClusterFirstWithHostNet so cluster DNS still works.
+hostNetwork: false
+
+# Capabilities needed when hostNetwork exposes Bluetooth/BlueZ to the container.
+securityContext:
+  capabilities:
+    add: []
+
+# Mount host BlueZ D-Bus into the pod (needed with hostNetwork or the BT scanner crashes).
+bluetooth:
+  dbus:
+    enabled: false
+    hostPath: /run/dbus
+
+serviceAccount:
+  create: true
+  name: ""
+  annotations: {}
+
+image:
+  repository: ghcr.io/home-assistant/home-assistant
+  tag: stable
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8123
+
+ingress:
+  enabled: true
+  host: home-assistant.example.com
+  # cert-manager ClusterIssuer name
+  issuerName: cloudflare
+
+env:
+  TZ: Europe/Berlin
+
+resources:
+  limits:
+    cpu: "2"
+    memory: 2Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+persistence:
+  enabled: true
+  size: 5Gi
+  mountPath: /config
+  storageClass: ""
+
+# Required behind Traefik / Cloudflare Tunnel (pod CIDR + service CIDR).
+# With hostNetwork, also trust the LAN: cross-node Traefik is SNATed to node IPs.
+configuration:
+  name: Home
+  country: DE
+  timeZone: Europe/Berlin
+  unitSystem: metric
+  currency: EUR
+  # Optional location (recommended for weather / sun / zones)
+  latitude: ""
+  longitude: ""
+  elevation: ""
+  trustedProxies:
+    - 10.42.0.0/16
+    - 10.43.0.0/16
+    - 192.168.0.0/21
+
+# Authentik OIDC via christiaangoossens/hass-oidc-auth
+# https://integrations.goauthentik.io/miscellaneous/home-assistant/
+auth:
+  authentik:
+    enabled: false
+    discoveryUrl: https://authentik.example.com/application/o/home-assistant/.well-known/openid-configuration
+    clientId: "CHANGEME"
+    clientSecret: "CHANGEME"
+    secretName: home-assistant-authentik-oauth
+    clientIdKey: client_id
+    clientSecretKey: client_secret
+    displayName: Authentik
+    # Authentik group names (Directory → Groups); must appear in the OIDC "groups" claim
+    roles:
+      admin: smarthome-admin
+      user: smarthome-users
+    oidcAuth:
+      # GitHub release tag; installs hass-oidc-auth.zip (not source)
+      version: v1.1.1
+
+# Scrapes HA entity metrics via /api/prometheus.
+# Set bearerToken.token (long-lived access token from HA Profile) to create the scrape secret.
+serviceMonitor:
+  enabled: false
+  interval: 30s
+  labels:
+    release: kube-prometheus-stack
+  bearerToken:
+    secretName: home-assistant-prometheus
+    secretKey: token
+    token: "CHANGEME"
+
+# matter.js Matter Server (drop-in WebSocket API for the HA Matter integration).
+# https://github.com/matter-js/matterjs-server — hostNetwork required for mDNS/Thread.
+# In HA: Settings → Devices & services → Matter → custom URL:
+#   ws://<release>-matter.<namespace>.svc.cluster.local:5580/ws
+matter:
+  enabled: false
+  image:
+    repository: ghcr.io/matter-js/matterjs-server
+    tag: stable
+    pullPolicy: IfNotPresent
+  hostNetwork: true
+  # Optional host NIC for mDNS (e.g. eth0). Leave empty for auto-detect.
+  primaryInterface: ""
+  service:
+    type: ClusterIP
+    port: 5580
+  persistence:
+    enabled: true
+    size: 1Gi
+    storageClass: ""
+  nodeSelector: {}
+  affinity: {}
+  extraEnv: {}
+  resources:
+    limits:
+      cpu: "1"
+      memory: 1Gi
+    requests:
+      cpu: 100m
+      memory: 256Mi

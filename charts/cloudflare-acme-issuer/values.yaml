@@ -1,0 +1,18 @@
+# Kubernetes Secret holding the Cloudflare API token (DNS edit permission).
+issuerSecret:
+  name: cloudflare-acme-token
+  apiToken: "CHANGEME"
+
+issuer:
+  # ClusterIssuer metadata.name (reference this from Certificate resources).
+  name: cloudflare
+  acme:
+    # Let's Encrypt production directory (use staging for tests).
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: "admin@example.com"
+    # Secret name where cert-manager stores the ACME account private key.
+    privateKeySecretName: cloudflare-key
+    solver:
+      email: "admin@example.com"
+      # Key inside issuerSecret that holds the Cloudflare API token.
+      apiTokenSecretKey: api-token

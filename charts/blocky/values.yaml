@@ -1,0 +1,45 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/0xerr0r/blocky
+  tag: latest
+  pullPolicy: IfNotPresent
+
+# DNS service port (UDP/TCP 53).
+service:
+  port: 53
+
+# HTTP UI ingress (Blocky API / metrics on config.ports.http).
+ingress:
+  enabled: false
+  host: blocky.example.com
+  port: 4000
+  # cert-manager ClusterIssuer name
+  issuerName: cloudflare
+
+# Traefik forward-auth middleware / Authentik outpost (used when ingress is enabled).
+auth:
+  authentik:
+    middleware:
+      name: authentik-forwardauth
+      namespace: authentik
+    outpostService:
+      name: authentik-server
+      namespace: authentik
+      port: 80
+
+# Blocky config written to the ConfigMap (see Blocky docs for full schema).
+config:
+  upstreams:
+    groups:
+      default: []
+  blocking: {}
+  ports:
+    dns: 53
+    http: 4000
+  # Chart deploys a Redis sidecar; point Blocky at it here.
+  redis:
+    address: redis:6379
+    required: false
+  log:
+    level: info

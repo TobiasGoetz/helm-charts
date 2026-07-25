@@ -1,0 +1,17 @@
+{{- if .Values.matter.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-matter
+  labels:
+    app: {{ .Release.Name }}-matter
+spec:
+  type: {{ .Values.matter.service.type }}
+  ports:
+    - name: websocket
+      port: {{ .Values.matter.service.port }}
+      targetPort: websocket
+      protocol: TCP
+  selector:
+    app: {{ .Release.Name }}-matter
+{{- end }}

@@ -1,0 +1,103 @@
+{{- if .Values.matter.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}-matter
+  labels:
+    app: {{ .Release.Name }}-matter
+spec:
+  serviceName: {{ .Release.Name }}-matter
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-matter
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-matter
+    spec:
+      {{- if or .Values.serviceAccount.create .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name | default .Release.Name }}
+      {{- end }}
+      {{- if .Values.matter.hostNetwork }}
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- end }}
+      {{- with .Values.matter.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.matter.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: matter-server
+          image: "{{ .Values.matter.image.repository }}:{{ .Values.matter.image.tag }}"
+          imagePullPolicy: {{ .Values.matter.image.pullPolicy }}
+          env:
+            - name: TZ
+              value: {{ .Values.env.TZ | default "UTC" | quote }}
+            - name: STORAGE_PATH
+              value: /data
+            - name: PORT
+              value: {{ .Values.matter.service.port | quote }}
+            {{- if .Values.matter.primaryInterface }}
+            - name: PRIMARY_INTERFACE
+              value: {{ .Values.matter.primaryInterface | quote }}
+            {{- end }}
+            {{- range $key, $value := .Values.matter.extraEnv }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          ports:
+            - name: websocket
+              containerPort: {{ .Values.matter.service.port }}
+              protocol: TCP
+          readinessProbe:
+            httpGet:
+              path: /
+              port: websocket
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: websocket
+            initialDelaySeconds: 30
+            periodSeconds: 30
+          {{- with .Values.matter.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: data
+              mountPath: /data
+      {{- if not .Values.matter.persistence.enabled }}
+      volumes:
+        - name: data
+          emptyDir: {}
+      {{- end }}
+  {{- if .Values.matter.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          app: {{ .Release.Name }}-matter
+        annotations:
+          helm.sh/resource-policy: keep
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        {{- if .Values.matter.persistence.storageClass }}
+        storageClassName: {{ .Values.matter.persistence.storageClass }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.matter.persistence.size | default "1Gi" }}
+  {{- end }}
+{{- end }}

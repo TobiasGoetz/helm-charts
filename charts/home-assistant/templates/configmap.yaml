@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  labels:
+    app: {{ .Release.Name }}
+data:
+  configuration.yaml: |
+    # Loads default set of integrations. Do not remove.
+    default_config:
+
+    homeassistant:
+      {{- with .Values.configuration.name }}
+      name: {{ . | quote }}
+      {{- end }}
+      country: {{ .Values.configuration.country | quote }}
+      time_zone: {{ .Values.configuration.timeZone | quote }}
+      unit_system: {{ .Values.configuration.unitSystem | quote }}
+      currency: {{ .Values.configuration.currency | quote }}
+      {{- if .Values.configuration.latitude }}
+      latitude: {{ .Values.configuration.latitude }}
+      {{- end }}
+      {{- if .Values.configuration.longitude }}
+      longitude: {{ .Values.configuration.longitude }}
+      {{- end }}
+      {{- if .Values.configuration.elevation }}
+      elevation: {{ .Values.configuration.elevation }}
+      {{- end }}
+
+    http:
+      use_x_forwarded_for: true
+      trusted_proxies:
+        {{- range .Values.configuration.trustedProxies }}
+        - {{ . }}
+        {{- end }}
+
+    {{- if .Values.auth.authentik.enabled }}
+    # https://integrations.goauthentik.io/miscellaneous/home-assistant/
+    # Roles from authentik groups (OpenID "groups" scope).
+    auth_oidc:
+      client_id: !secret authentik_client_id
+      client_secret: !secret authentik_client_secret
+      discovery_url: {{ .Values.auth.authentik.discoveryUrl | quote }}
+      display_name: {{ .Values.auth.authentik.displayName | quote }}
+      features:
+        include_groups_scope: true
+        force_https: true
+      roles:
+        admin: {{ .Values.auth.authentik.roles.admin | quote }}
+        {{- if .Values.auth.authentik.roles.user }}
+        user: {{ .Values.auth.authentik.roles.user | quote }}
+        {{- end }}
+    {{- end }}
+
+    {{- if .Values.serviceMonitor.enabled }}
+    prometheus:
+    {{- end }}
+
+    automation: !include automations.yaml
+    script: !include scripts.yaml
+    scene: !include scenes.yaml

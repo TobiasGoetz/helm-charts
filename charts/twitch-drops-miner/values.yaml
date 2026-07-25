@@ -1,0 +1,52 @@
+replicaCount: 1
+
+image:
+  repository: dungfu/twitch-drops-miner
+  # Prefer a pinned tag; latest can break unexpectedly.
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 5800
+
+ingress:
+  enabled: true
+  host: twitch-drops-miner.example.com
+  # cert-manager ClusterIssuer name
+  issuerName: cloudflare
+
+# Traefik forward-auth middleware / Authentik outpost.
+auth:
+  authentik:
+    middleware:
+      name: authentik-forwardauth
+      namespace: authentik
+    outpostService:
+      name: authentik-server
+      namespace: authentik
+      port: 80
+
+env:
+  # ENV_VAR: Value
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 2Gi
+  requests:
+    cpu: 250m
+    memory: 512Mi
+
+# App config PVC (container path required by dungfu/twitch-drops-miner).
+persistence:
+  enabled: true
+  size: 1Gi
+  mountPath: /TwitchDropsMiner/config
+  # Empty = default StorageClass (e.g. local-path on k3s).
+  storageClass: ""
+  # Separate cache volume.
+  cache:
+    enabled: true
+    size: 2Gi
+    mountPath: /TwitchDropsMiner/cache

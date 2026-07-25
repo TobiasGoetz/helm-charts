@@ -1,0 +1,32 @@
+{
+  "packages": {
+    "charts/blocky": {
+      "release-type": "helm",
+      "package-name": "blocky",
+      "extra-files": [
+        "README.md"
+      ]
+    },
+    "charts/cloudflare-acme-issuer": {
+      "release-type": "helm",
+      "package-name": "cloudflare-acme-issuer",
+      "extra-files": [
+        "README.md"
+      ]
+    },
+    "charts/home-assistant": {
+      "release-type": "helm",
+      "package-name": "home-assistant",
+      "extra-files": [
+        "README.md"
+      ]
+    },
+    "charts/twitch-drops-miner": {
+      "release-type": "helm",
+      "package-name": "twitch-drops-miner",
+      "extra-files": [
+        "README.md"
+      ]
+    }
+  }
+}

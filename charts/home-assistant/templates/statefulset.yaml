@@ -1,0 +1,166 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  serviceName: {{ .Release.Name }}
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      {{- if or .Values.serviceAccount.create .Values.serviceAccount.name }}
+      serviceAccountName: {{ .Values.serviceAccount.name | default .Release.Name }}
+      {{- end }}
+      {{- if .Values.hostNetwork }}
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      {{- end }}
+      initContainers:
+        - name: seed-config
+          image: busybox:1.37
+          command:
+            - sh
+            - -c
+            - |
+              for f in automations.yaml scripts.yaml scenes.yaml; do
+                if [ ! -f "/config/$f" ]; then
+                  if [ "$f" = "automations.yaml" ]; then
+                    echo '[]' > "/config/$f"
+                  else
+                    touch "/config/$f"
+                  fi
+                fi
+              done
+          volumeMounts:
+            - name: config
+              mountPath: /config
+        {{- if .Values.auth.authentik.enabled }}
+        - name: install-oidc-auth
+          image: alpine:3.21
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+              apk add --no-cache curl unzip >/dev/null
+              version={{ .Values.auth.authentik.oidcAuth.version | quote }}
+              mkdir -p /config/custom_components
+              rm -rf /config/custom_components/auth_oidc /tmp/hass-oidc-auth.zip /tmp/auth_oidc
+              mkdir -p /tmp/auth_oidc
+              curl -fsSL -o /tmp/hass-oidc-auth.zip \
+                "https://github.com/christiaangoossens/hass-oidc-auth/releases/download/${version}/hass-oidc-auth.zip"
+              unzip -qo /tmp/hass-oidc-auth.zip -d /tmp/auth_oidc
+              mv /tmp/auth_oidc /config/custom_components/auth_oidc
+          volumeMounts:
+            - name: config
+              mountPath: /config
+        - name: seed-authentik-secrets
+          image: busybox:1.37
+          env:
+            - name: AUTHENTIK_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.authentik.secretName }}
+                  key: {{ .Values.auth.authentik.clientIdKey }}
+            - name: AUTHENTIK_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.auth.authentik.secretName }}
+                  key: {{ .Values.auth.authentik.clientSecretKey }}
+          command:
+            - sh
+            - -c
+            - |
+              printf 'authentik_client_id: "%s"\nauthentik_client_secret: "%s"\n' \
+                "$AUTHENTIK_CLIENT_ID" "$AUTHENTIK_CLIENT_SECRET" > /config/secrets.yaml
+          volumeMounts:
+            - name: config
+              mountPath: /config
+        {{- end }}
+      containers:
+        - name: home-assistant
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          {{- with .Values.securityContext }}
+          securityContext:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- if .Values.env }}
+          env:
+            {{- range $key, $value := .Values.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            initialDelaySeconds: 60
+            periodSeconds: 30
+          {{- if .Values.resources }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: config
+              mountPath: {{ .Values.persistence.mountPath }}
+            - name: configuration
+              mountPath: {{ .Values.persistence.mountPath }}/configuration.yaml
+              subPath: configuration.yaml
+              readOnly: true
+            {{- if .Values.bluetooth.dbus.enabled }}
+            - name: dbus
+              mountPath: /run/dbus
+              readOnly: true
+            {{- end }}
+      volumes:
+        - name: configuration
+          configMap:
+            name: {{ .Release.Name }}-config
+        {{- if .Values.bluetooth.dbus.enabled }}
+        - name: dbus
+          hostPath:
+            path: {{ .Values.bluetooth.dbus.hostPath }}
+            type: Directory
+        {{- end }}
+        {{- if not .Values.persistence.enabled }}
+        - name: config
+          emptyDir: {}
+        {{- end }}
+  {{- if .Values.persistence.enabled }}
+  volumeClaimTemplates:
+    - metadata:
+        name: config
+        labels:
+          app: {{ .Release.Name }}
+        annotations:
+          helm.sh/resource-policy: keep
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        {{- if .Values.persistence.storageClass }}
+        storageClassName: {{ .Values.persistence.storageClass }}
+        {{- end }}
+        resources:
+          requests:
+            storage: {{ .Values.persistence.size | default "5Gi" }}
+  {{- end }}
