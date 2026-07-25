@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.10](https://github.com/TobiasGoetz/helm-charts/compare/blocky-v1.2.9...blocky-v1.2.10) (2026-07-25)
+
+
+### Bug Fixes
+
+* simplify pages caching ([57a6801](https://github.com/TobiasGoetz/helm-charts/commit/57a6801c8c063d229a2619851b23c15fa2efda78))
+
 ## [1.2.9](https://github.com/TobiasGoetz/helm-charts/compare/blocky-v1.2.8...blocky-v1.2.9) (2026-07-25)
 
 

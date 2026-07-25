@@ -1,6 +1,6 @@
 {
-  "charts/blocky": "1.2.9",
-  "charts/cloudflare-acme-issuer": "1.2.9",
-  "charts/home-assistant": "1.2.9",
-  "charts/twitch-drops-miner": "1.2.9"
+  "charts/blocky": "1.2.10",
+  "charts/cloudflare-acme-issuer": "1.2.10",
+  "charts/home-assistant": "1.2.10",
+  "charts/twitch-drops-miner": "1.2.10"
 }

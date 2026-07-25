@@ -4,5 +4,5 @@ name: cloudflare-acme-issuer
 description: cert-manager ClusterIssuer for Let's Encrypt DNS-01 via Cloudflare
 
 type: application
-version: 1.2.9
+version: 1.2.10
 appVersion: "1.0.0"
