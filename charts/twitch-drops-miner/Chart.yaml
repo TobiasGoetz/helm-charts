@@ -1,4 +1,4 @@
-# Manual release counter of shame: 1
+# Manual release counter of shame: 2
 apiVersion: v2
 name: twitch-drops-miner
 description: A Helm chart for twitch-drops-miner on Kubernetes

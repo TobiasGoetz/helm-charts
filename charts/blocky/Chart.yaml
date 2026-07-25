@@ -1,4 +1,4 @@
-# Manual release counter of shame: 1
+# Manual release counter of shame: 2
 apiVersion: v2
 name: blocky
 description: DNS proxy as ad-blocker for local network
