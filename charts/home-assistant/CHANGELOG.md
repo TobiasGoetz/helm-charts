@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.2](https://github.com/TobiasGoetz/helm-charts/compare/home-assistant-v1.1.1...home-assistant-v1.1.2) (2026-07-25)
+
+
+### Bug Fixes
+
+* release workflow triggered only on root release ([bae99bc](https://github.com/TobiasGoetz/helm-charts/commit/bae99bc5d39669114624defbbaf7e60858e8f4fb))
+
 ## [1.1.1](https://github.com/TobiasGoetz/helm-charts/compare/home-assistant-v1.1.0...home-assistant-v1.1.1) (2026-07-25)
 
 

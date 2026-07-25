@@ -8,7 +8,7 @@ See [values.yaml](values.yaml) for all options.
 
 <!-- x-release-please-start-version -->
 ```bash
-helm install twitch-drops-miner oci://ghcr.io/tobiasgoetz/helm-charts/twitch-drops-miner --version 1.1.1 \
+helm install twitch-drops-miner oci://ghcr.io/tobiasgoetz/helm-charts/twitch-drops-miner --version 1.1.2 \
   -n twitch-drops-miner --create-namespace \
   -f values.yaml
 ```
