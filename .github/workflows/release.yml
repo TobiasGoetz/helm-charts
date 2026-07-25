@@ -10,9 +10,6 @@ permissions:
   pull-requests: write
   issues: write
   packages: write
-  pages: write
-  id-token: write
-  actions: read
 
 jobs:
   release-please:
