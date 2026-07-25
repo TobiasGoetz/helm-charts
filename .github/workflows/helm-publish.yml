@@ -11,6 +11,13 @@ on:
         description: JSON array of released chart paths
         type: string
         required: true
+  workflow_dispatch:
+    inputs:
+      paths:
+        description: 'JSON array of chart paths, e.g. ["charts/blocky"]'
+        type: string
+        required: true
+        default: '[]'
 
 jobs:
   publish:

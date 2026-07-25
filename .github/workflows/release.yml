@@ -16,7 +16,6 @@ jobs:
     name: Release Please
     runs-on: ubuntu-latest
     outputs:
-      release_created: ${{ steps.release.outputs.release_created }}
       paths_released: ${{ steps.release.outputs.paths_released }}
     steps:
       - name: Get GitHub App token
@@ -33,7 +32,7 @@ jobs:
 
   helm-publish:
     needs: release-please
-    if: needs.release-please.outputs.release_created == 'true'
+    if: needs.release-please.outputs.paths_released != '' && needs.release-please.outputs.paths_released != '[]'
     uses: ./.github/workflows/helm-publish.yml
     with:
       paths: ${{ needs.release-please.outputs.paths_released }}
