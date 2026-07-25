@@ -20,7 +20,7 @@ on:
         default: '[]'
 
 jobs:
-  publish-oci:
+  package:
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -35,6 +35,51 @@ jobs:
         with:
           version: "v3.14.0"
 
+      - name: Package chart
+        id: package
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          name=$(basename "${{ matrix.chart }}")
+          version=$(awk '/^version:/ { print $2; exit }' "${{ matrix.chart }}/Chart.yaml" | tr -d '"')
+          mkdir -p .helm-packages
+          helm package "${{ matrix.chart }}" -d .helm-packages
+          package=".helm-packages/${name}-${version}.tgz"
+          ls -la .helm-packages
+          echo "Uploading ${package} to release ${name}-v${version}"
+          gh release upload "${name}-v${version}" "$package" --clobber
+          echo "name=${name}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload chart package
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: chart-package-${{ steps.package.outputs.name }}
+          path: .helm-packages/*.tgz
+          if-no-files-found: error
+
+  publish-oci:
+    needs: package
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        chart: ${{ fromJson(inputs.paths) }}
+    steps:
+      - name: Resolve chart name
+        id: chart
+        run: echo "name=$(basename "${{ matrix.chart }}")" >> "$GITHUB_OUTPUT"
+
+      - name: Download chart package
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: chart-package-${{ steps.chart.outputs.name }}
+          path: .helm-packages
+
+      - name: Install Helm
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310
+        with:
+          version: "v3.14.0"
+
       - name: Install crane
         uses: imjasonh/setup-crane@feee3b6bb0d4c68370f256a4502498c9227e5c6b # v0.7
 
@@ -43,19 +88,25 @@ jobs:
           echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
           echo "${{ secrets.GITHUB_TOKEN }}" | crane auth login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
 
-      - name: Package and push chart
+      - name: Push chart
         run: |
-          set -euo pipefail
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          chartPath="${{ matrix.chart }}"
-          helm package "$chartPath"
-          name=$(basename "$chartPath")
-          version=$(awk '/^version:/ { print $2; exit }' "$chartPath/Chart.yaml" | tr -d '"')
+          name="${{ steps.chart.outputs.name }}"
+          shopt -s nullglob
+          packages=(.helm-packages/"${name}"-*.tgz)
+          if [ "${#packages[@]}" -ne 1 ]; then
+            echo "expected exactly one package for ${name}, found: ${packages[*]-none}"
+            exit 1
+          fi
+          package="${packages[0]}"
+          version=$(basename "$package" .tgz)
+          version="${version##*-}"
           ref="ghcr.io/${OWNER}/helm-charts/${name}"
-          helm push "${name}-${version}.tgz" "oci://ghcr.io/${OWNER}/helm-charts"
+          helm push "$package" "oci://ghcr.io/${OWNER}/helm-charts"
           crane tag "${ref}:${version}" latest
 
   publish-pages:
+    needs: package
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -68,61 +119,26 @@ jobs:
           git config user.name "$GITHUB_ACTOR"
           git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-      - name: Install Helm
-        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310
+      - name: Download chart packages
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          version: "v3.14.0"
+          pattern: chart-package-*
+          path: .helm-packages
+          merge-multiple: true
 
       - name: Install chart-releaser
         uses: helm/chart-releaser-action@cae68fefc6b5f367a0275617c9f83181ba54714f # v1.7.0
         with:
           install_only: true
 
-      - name: Ensure gh-pages branch
-        run: |
-          set -euo pipefail
-          if git ls-remote --exit-code --heads origin gh-pages; then
-            echo "gh-pages already exists"
-          else
-            current=$(git rev-parse HEAD)
-            git checkout --orphan gh-pages
-            git reset --hard
-            git commit --allow-empty -m "Initialize gh-pages"
-            git push origin gh-pages
-            git checkout --force "$current"
-          fi
-          git fetch origin gh-pages:refs/remotes/origin/gh-pages
-
-
-      - name: Package charts
-        run: |
-          set -euo pipefail
-          mkdir -p .cr-release-packages
-          echo '${{ inputs.paths }}' | jq -r '.[]' | while read -r chartPath; do
-            echo "Packaging $chartPath"
-            helm package "$chartPath" -d .cr-release-packages
-          done
-          ls -la .cr-release-packages
-
-      - name: Upload packages and publish index to GitHub Pages
+      - name: Publish index to GitHub Pages
         env:
           CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          set -euo pipefail
-          owner="${{ github.repository_owner }}"
-          repo="${GITHUB_REPOSITORY#*/}"
-          # cr index only adds charts that exist as .tgz assets on GitHub Releases
-          cr upload \
-            --owner "$owner" \
-            --git-repo "$repo" \
-            --package-path .cr-release-packages \
-            --release-name-template "{{ .Name }}-v{{ .Version }}" \
-            --skip-existing
           cr index \
-            --owner "$owner" \
-            --git-repo "$repo" \
+            --owner "${{ github.repository_owner }}" \
+            --git-repo "${GITHUB_REPOSITORY#*/}" \
             --pages-branch gh-pages \
-            --package-path .cr-release-packages \
-            --packages-with-index \
+            --package-path .helm-packages \
             --release-name-template "{{ .Name }}-v{{ .Version }}" \
             --push

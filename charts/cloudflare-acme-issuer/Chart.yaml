@@ -1,4 +1,4 @@
-# Manual release counter of shame: 4
+# Manual release counter of shame: 5
 apiVersion: v2
 name: cloudflare-acme-issuer
 description: cert-manager ClusterIssuer for Let's Encrypt DNS-01 via Cloudflare
