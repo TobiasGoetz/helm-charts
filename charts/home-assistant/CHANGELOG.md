@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.5](https://github.com/TobiasGoetz/helm-charts/compare/home-assistant-v1.2.4...home-assistant-v1.2.5) (2026-07-25)
+
+
+### Bug Fixes
+
+* pacakge used hidden folder ([48a6118](https://github.com/TobiasGoetz/helm-charts/commit/48a6118db132a5aa1a6813840c524d74d52561e0))
+
 ## [1.2.4](https://github.com/TobiasGoetz/helm-charts/compare/home-assistant-v1.2.3...home-assistant-v1.2.4) (2026-07-25)
 
 
