@@ -80,13 +80,9 @@ jobs:
         with:
           version: "v3.14.0"
 
-      - name: Install crane
-        uses: imjasonh/setup-crane@feee3b6bb0d4c68370f256a4502498c9227e5c6b # v0.7
-
       - name: Log in to GHCR
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
-          echo "${{ secrets.GITHUB_TOKEN }}" | crane auth login ghcr.io -u "${{ github.repository_owner }}" --password-stdin
 
       - name: Push chart
         run: |
@@ -98,12 +94,7 @@ jobs:
             echo "expected exactly one package for ${name}, found: ${packages[*]-none}"
             exit 1
           fi
-          package="${packages[0]}"
-          version=$(basename "$package" .tgz)
-          version="${version##*-}"
-          ref="ghcr.io/${OWNER}/helm-charts/${name}"
-          helm push "$package" "oci://ghcr.io/${OWNER}/helm-charts"
-          crane tag "${ref}:${version}" latest
+          helm push "${packages[0]}" "oci://ghcr.io/${OWNER}/helm-charts"
 
   publish-pages:
     needs: package
