@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.7](https://github.com/TobiasGoetz/helm-charts/compare/blocky-v1.2.6...blocky-v1.2.7) (2026-07-25)
+
+
+### Bug Fixes
+
+* trigger release ([52494c5](https://github.com/TobiasGoetz/helm-charts/commit/52494c56bf80209276abfa1a593c962d965f4d6e))
+
 ## [1.2.6](https://github.com/TobiasGoetz/helm-charts/compare/blocky-v1.2.5...blocky-v1.2.6) (2026-07-25)
 
 
