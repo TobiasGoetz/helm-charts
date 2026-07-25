@@ -135,6 +135,8 @@ jobs:
         env:
           CR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          rm -rf .cr-index
+          mkdir -p .cr-index
           cr index \
             --owner "${{ github.repository_owner }}" \
             --git-repo "${GITHUB_REPOSITORY#*/}" \
