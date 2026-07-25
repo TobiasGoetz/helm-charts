@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.0](https://github.com/TobiasGoetz/helm-charts/compare/blocky-v1.1.3...blocky-v1.2.0) (2026-07-25)
+
+
+### Features
+
+* add github page for full helm repo support ([4ef65f9](https://github.com/TobiasGoetz/helm-charts/commit/4ef65f92b0863baf13bc891908f94fe3077573d9))
+
 ## [1.1.3](https://github.com/TobiasGoetz/helm-charts/compare/blocky-v1.1.2...blocky-v1.1.3) (2026-07-25)
 
 
