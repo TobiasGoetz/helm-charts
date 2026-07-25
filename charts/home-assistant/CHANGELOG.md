@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.3](https://github.com/TobiasGoetz/helm-charts/compare/home-assistant-v1.2.2...home-assistant-v1.2.3) (2026-07-25)
+
+
+### Bug Fixes
+
+* attach chart to release ([8cfc8d0](https://github.com/TobiasGoetz/helm-charts/commit/8cfc8d0c6d9ddeb9cbd7bbbc0370440550ba1f7b))
+
 ## [1.2.2](https://github.com/TobiasGoetz/helm-charts/compare/home-assistant-v1.2.1...home-assistant-v1.2.2) (2026-07-25)
 
 
