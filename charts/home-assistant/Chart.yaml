@@ -5,6 +5,6 @@ description: A Helm chart for Home Assistant on Kubernetes
 
 type: application
 
-version: 1.2.5
+version: 1.2.6
 
 appVersion: "stable"
