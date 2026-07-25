@@ -15,6 +15,10 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        chart: ${{ fromJson(inputs.paths) }}
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -27,13 +31,12 @@ jobs:
       - name: Log in to GHCR
         run: echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u ${{ github.repository_owner }} --password-stdin
 
-      - name: Package and push charts
+      - name: Package and push chart
         run: |
           set -euo pipefail
           OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          echo '${{ inputs.paths }}' | jq -r '.[]' | while read -r chartPath; do
-            helm package "$chartPath"
-            name=$(basename "$chartPath")
-            version=$(awk '/^version:/ { print $2; exit }' "$chartPath/Chart.yaml" | tr -d '"')
-            helm push "${name}-${version}.tgz" "oci://ghcr.io/${OWNER}/helm-charts"
-          done
+          chartPath="${{ matrix.chart }}"
+          helm package "$chartPath"
+          name=$(basename "$chartPath")
+          version=$(awk '/^version:/ { print $2; exit }' "$chartPath/Chart.yaml" | tr -d '"')
+          helm push "${name}-${version}.tgz" "oci://ghcr.io/${OWNER}/helm-charts"
