@@ -114,14 +114,14 @@ jobs:
         with:
           version: "v3.14.0"
 
-      - name: Restore site cache
-        id: site-cache
+      - name: Restore chart package cache
+        id: chart-cache
         uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: site
-          key: helm-pages-site-${{ github.run_id }}-${{ github.run_attempt }}
+          path: site/*.tgz
+          key: helm-pages-charts-${{ github.run_id }}-${{ github.run_attempt }}
           restore-keys: |
-            helm-pages-site-
+            helm-pages-charts-
 
       - name: Download new chart packages
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
@@ -134,47 +134,23 @@ jobs:
         id: cache-state
         run: |
           mkdir -p site
-          if [[ -f site/index.yaml ]]; then
+          shopt -s nullglob
+          cached=(site/*.tgz)
+          if (( ${#cached[@]} > 0 )); then
             echo "hit=true" >> "$GITHUB_OUTPUT"
-            echo "Cache hit: found site/index.yaml"
+            echo "Cache hit: ${#cached[@]} cached chart package(s)"
           else
             echo "hit=false" >> "$GITHUB_OUTPUT"
-            echo "Cache miss: no site/index.yaml"
+            echo "Cache miss: no cached chart packages"
           fi
 
-      - name: Add new packages to site
-        run: |
-          set -euo pipefail
-          shopt -s nullglob
-          new_packages=(new-packages/*.tgz)
-          if (( ${#new_packages[@]} == 0 )); then
-            echo "no new chart packages downloaded"
-            exit 1
-          fi
-          cp -f "${new_packages[@]}" site/
-          ls -la site/*.tgz
-
-      - name: Merge into cached chart repository
-        if: steps.cache-state.outputs.hit == 'true'
-        run: |
-          set -euo pipefail
-          owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          repo="${{ github.repository }}"
-          url="https://${owner}.github.io/${repo#*/}"
-          cp site/index.yaml /tmp/index.yaml
-          helm repo index site --url "$url" --merge /tmp/index.yaml
-          ls -la site
-
-      - name: Rebuild chart repository from releases
+      - name: Download chart packages from releases
         if: steps.cache-state.outputs.hit != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           repo="${{ github.repository }}"
-          owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
-          url="https://${owner}.github.io/${repo#*/}"
-
           mapfile -t tags < <(
             gh api --paginate "repos/${repo}/releases" --jq '.[].tag_name'
           )
@@ -187,26 +163,37 @@ jobs:
                 --clobber || true
           fi
 
+      - name: Add new packages to site
+        run: |
+          set -euo pipefail
           shopt -s nullglob
           new_packages=(new-packages/*.tgz)
-          if (( ${#new_packages[@]} > 0 )); then
-            cp -f "${new_packages[@]}" site/
+          if (( ${#new_packages[@]} == 0 )); then
+            echo "no new chart packages downloaded"
+            exit 1
           fi
+          cp -f "${new_packages[@]}" site/
 
+      - name: Build chart repository index
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
           packages=(site/*.tgz)
           if (( ${#packages[@]} == 0 )); then
             echo "no chart packages found"
             exit 1
           fi
-
+          owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          repo="${{ github.repository }}"
+          url="https://${owner}.github.io/${repo#*/}"
           helm repo index site --url "$url"
           ls -la site
 
-      - name: Save site cache
+      - name: Save chart package cache
         uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          path: site
-          key: helm-pages-site-${{ github.run_id }}-${{ github.run_attempt }}
+          path: site/*.tgz
+          key: helm-pages-charts-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Configure Pages
         uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
