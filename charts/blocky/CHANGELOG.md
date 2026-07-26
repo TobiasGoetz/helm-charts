@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.0](https://github.com/TobiasGoetz/helm-charts/compare/blocky-v1.2.10...blocky-v1.3.0) (2026-07-26)
+
+
+### Features
+
+* add service monitor for prometheus ([8930f06](https://github.com/TobiasGoetz/helm-charts/commit/8930f06d41d2b8147fb0260e93bd4bafd1d21924))
+
 ## [1.2.10](https://github.com/TobiasGoetz/helm-charts/compare/blocky-v1.2.9...blocky-v1.2.10) (2026-07-25)
 
 
