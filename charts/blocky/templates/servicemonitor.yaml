@@ -1,0 +1,23 @@
+{{- if dig "prometheus" "enable" false .Values.config }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ .Release.Name }}-blocky
+  labels:
+    app: blocky
+    {{- with .Values.serviceMonitor.labels }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  selector:
+    matchLabels:
+      app: blocky
+      app.kubernetes.io/component: http
+  namespaceSelector:
+    matchNames:
+      - {{ .Release.Namespace }}
+  endpoints:
+    - port: http
+      path: {{ dig "prometheus" "path" "/metrics" .Values.config }}
+      interval: {{ .Values.serviceMonitor.interval }}
+{{- end }}

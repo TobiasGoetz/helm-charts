@@ -41,5 +41,15 @@ config:
   redis:
     address: redis:6379
     required: false
+  # Enables /metrics on the HTTP listener; also creates a ServiceMonitor.
+  prometheus:
+    enable: false
+    path: /metrics
   log:
     level: info
+
+# Scrapes Blocky metrics when config.prometheus.enable is true.
+serviceMonitor:
+  interval: 30s
+  labels:
+    release: kube-prometheus-stack
