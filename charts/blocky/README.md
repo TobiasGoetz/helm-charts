@@ -8,7 +8,7 @@ Deploys Blocky plus an optional Redis sidecar. See [values.yaml](values.yaml) fo
 
 <!-- x-release-please-start-version -->
 ```bash
-helm install blocky oci://ghcr.io/tobiasgoetz/helm-charts/blocky --version 1.3.0 \
+helm install blocky oci://ghcr.io/tobiasgoetz/helm-charts/blocky --version 1.3.1 \
   -n blocky --create-namespace \
   -f values.yaml
 ```

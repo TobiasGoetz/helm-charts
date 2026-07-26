@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.1](https://github.com/TobiasGoetz/helm-charts/compare/blocky-v1.3.0...blocky-v1.3.1) (2026-07-26)
+
+
+### Bug Fixes
+
+* deplopyment port name ([149c611](https://github.com/TobiasGoetz/helm-charts/commit/149c6117ad59bd2df317a1b2679281ea13f34435))
+* deployment doesnt use config port ([578b6f5](https://github.com/TobiasGoetz/helm-charts/commit/578b6f582248c545d3a9c85d1014247940ef7858))
+
 ## [1.3.0](https://github.com/TobiasGoetz/helm-charts/compare/blocky-v1.2.10...blocky-v1.3.0) (2026-07-26)
 
 
