@@ -34,6 +34,13 @@
       "extra-files": [
         "README.md"
       ]
+    },
+    "charts/uptime-kuma": {
+      "release-type": "helm",
+      "package-name": "uptime-kuma",
+      "extra-files": [
+        "README.md"
+      ]
     }
   }
 }

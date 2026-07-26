@@ -1,0 +1,63 @@
+replicaCount: 1
+
+image:
+  repository: louislam/uptime-kuma
+  # Prefer a pinned tag; see https://github.com/louislam/uptime-kuma
+  tag: "2.4.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3001
+
+ingress:
+  enabled: true
+  host: uptime-kuma.example.com
+  # cert-manager ClusterIssuer name
+  issuerName: cloudflare
+
+# Traefik forward-auth middleware / Authentik outpost.
+# https://integrations.goauthentik.io/monitoring/uptime-kuma/
+# After first login: Settings → Security → Disable Auth; Settings → Reverse Proxy → Trust Proxy = Yes.
+# In Authentik Proxy Provider, set Unauthenticated Paths for public status pages (see guide).
+auth:
+  authentik:
+    middleware:
+      name: authentik-forwardauth
+      namespace: authentik
+    outpostService:
+      name: authentik-server
+      namespace: authentik
+      port: 80
+
+env:
+  TZ: Europe/Berlin
+
+resources:
+  limits:
+    cpu: "1"
+    memory: 1Gi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+# App data PVC (SQLite + uploads). Do not use NFS.
+persistence:
+  enabled: true
+  size: 2Gi
+  mountPath: /app/data
+  # Empty = default StorageClass (e.g. local-path on k3s).
+  storageClass: ""
+
+# Scrapes /metrics. With Authentik + UK "Disable Auth", leave password empty (no scrape auth).
+# If UK auth is enabled: set password to the UK password or an API key (username unused for API keys).
+# https://github.com/louislam/uptime-kuma/wiki/Prometheus-Integration
+serviceMonitor:
+  enabled: false
+  interval: 30s
+  labels:
+    release: kube-prometheus-stack
+  basicAuth:
+    secretName: uptime-kuma-prometheus
+    username: ""
+    password: ""

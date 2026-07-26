@@ -14,6 +14,7 @@ Published two ways:
 | [`blocky`](charts/blocky) | Blocky DNS |
 | [`home-assistant`](charts/home-assistant) | Home Assistant + Matter + Authentik OIDC |
 | [`twitch-drops-miner`](charts/twitch-drops-miner) | Twitch Drops Miner |
+| [`uptime-kuma`](charts/uptime-kuma) | Uptime Kuma |
 
 ## Install
 
