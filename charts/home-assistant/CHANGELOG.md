@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.11](https://github.com/TobiasGoetz/helm-charts/compare/home-assistant-v1.2.10...home-assistant-v1.2.11) (2026-07-26)
+
+
+### Bug Fixes
+
+* **hass:** add metadata to pvc ([b9341f7](https://github.com/TobiasGoetz/helm-charts/commit/b9341f78f254cdcb1ac7224e32ec3e3c89e5ebdb))
+
 ## [1.2.10](https://github.com/TobiasGoetz/helm-charts/compare/home-assistant-v1.2.9...home-assistant-v1.2.10) (2026-07-25)
 
 
