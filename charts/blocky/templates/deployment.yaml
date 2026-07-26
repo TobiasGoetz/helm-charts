@@ -23,7 +23,7 @@ spec:
             - containerPort: 53
               name: dns-tcp
               protocol: TCP
-            - containerPort: 4000
+            - containerPort: {{ .Values.config.ports.http }}
               name: http
               protocol: TCP
           volumeMounts:
