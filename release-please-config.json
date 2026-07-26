@@ -21,13 +21,6 @@
         "README.md"
       ]
     },
-    "charts/cloudflare-acme-issuer": {
-      "release-type": "helm",
-      "package-name": "cloudflare-acme-issuer",
-      "extra-files": [
-        "README.md"
-      ]
-    },
     "charts/home-assistant": {
       "release-type": "helm",
       "package-name": "home-assistant",

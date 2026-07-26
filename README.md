@@ -12,7 +12,6 @@ Published two ways:
 | Chart | Description |
 |-------|-------------|
 | [`blocky`](charts/blocky) | Blocky DNS |
-| [`cloudflare-acme-issuer`](charts/cloudflare-acme-issuer) | cert-manager ClusterIssuer (Cloudflare DNS-01) |
 | [`home-assistant`](charts/home-assistant) | Home Assistant + Matter + Authentik OIDC |
 | [`twitch-drops-miner`](charts/twitch-drops-miner) | Twitch Drops Miner |
 

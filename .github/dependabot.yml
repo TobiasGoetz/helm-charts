@@ -15,13 +15,6 @@ updates:
       prefix: "deps(blocky)"
 
   - package-ecosystem: helm
-    directory: "/charts/cloudflare-acme-issuer"
-    schedule:
-      interval: daily
-    commit-message:
-      prefix: "deps(cloudflare-acme-issuer)"
-
-  - package-ecosystem: helm
     directory: "/charts/home-assistant"
     schedule:
       interval: daily
