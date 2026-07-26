@@ -36,5 +36,5 @@ spec:
   ports:
     - name: http
       port: {{ .Values.config.ports.http }}
-      targetPort: {{ .Values.config.ports.http }}
+      targetPort: http
       protocol: TCP
