@@ -36,7 +36,7 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310
         with:
-          version: "v3.21.3"
+          version: "v4.2.3"
 
       - name: Package chart
         id: package
@@ -81,7 +81,7 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310
         with:
-          version: "v3.21.3"
+          version: "v4.2.3"
 
       - name: Log in to GHCR
         run: |
@@ -112,7 +112,7 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310
         with:
-          version: "v3.21.3"
+          version: "v4.2.3"
 
       - name: Restore chart package cache
         id: chart-cache
