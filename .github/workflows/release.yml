@@ -42,7 +42,7 @@ jobs:
           set -euo pipefail
           echo "$PRS" | jq -r '.[].number' | while read -r pr_number; do
             echo "Enabling auto-merge on release PR #${pr_number}"
-            gh pr merge --auto --squash "$pr_number"
+            gh pr merge --repo "$GITHUB_REPOSITORY" --auto --squash "$pr_number"
           done
 
   helm-publish:
