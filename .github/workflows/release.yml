@@ -33,6 +33,18 @@ jobs:
         with:
           token: ${{ steps.app_token.outputs.token }}
 
+      - name: Enable auto-merge on release PRs
+        if: ${{ steps.release.outputs.prs_created == 'true' }}
+        env:
+          GH_TOKEN: ${{ steps.app_token.outputs.token }}
+          PRS: ${{ steps.release.outputs.prs }}
+        run: |
+          set -euo pipefail
+          echo "$PRS" | jq -r '.[].number' | while read -r pr_number; do
+            echo "Enabling auto-merge on release PR #${pr_number}"
+            gh pr merge --auto --squash "$pr_number"
+          done
+
   helm-publish:
     needs: release-please
     if: needs.release-please.outputs.paths_released != '' && needs.release-please.outputs.paths_released != '[]'
