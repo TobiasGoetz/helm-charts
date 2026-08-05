@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/TobiasGoetz/helm-charts/compare/blocky-v1.3.1...blocky-v1.4.0) (2026-08-05)
+
+
+### Features
+
+* use specific versions from values file ([33c3c15](https://github.com/TobiasGoetz/helm-charts/commit/33c3c15caf4b5c25fdb16c170bcecd5afba46b59))
+
+
+### Bug Fixes
+
+* bump ci ([e53fb4f](https://github.com/TobiasGoetz/helm-charts/commit/e53fb4fb1e700801ba7c32c8f881a252c3c2d06a))
+
 ## [1.3.1](https://github.com/TobiasGoetz/helm-charts/compare/blocky-v1.3.0...blocky-v1.3.1) (2026-07-26)
 
 
