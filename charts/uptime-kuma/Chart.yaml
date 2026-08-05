@@ -6,5 +6,3 @@ description: A Helm chart for Uptime Kuma on Kubernetes
 type: application
 
 version: 1.0.0
-
-appVersion: "2.4.0"

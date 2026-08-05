@@ -1,0 +1,30 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests"
+  ],
+  "semanticCommits": "enabled",
+  "semanticCommitType": "deps",
+  "dependencyDashboard": true,
+  "platformAutomerge": true,
+  "packageRules": [
+    {
+      "description": "Automerge non-major updates",
+      "matchUpdateTypes": ["minor", "patch", "pin", "digest"],
+      "automerge": true
+    },
+    {
+      "description": "GitHub Actions commits use ci prefix for release-please",
+      "matchManagers": ["github-actions"],
+      "semanticCommitType": "ci",
+      "semanticCommitScope": null
+    },
+    {
+      "description": "Twitch drops miner uses 16.dev.<sha> tags",
+      "matchPackageNames": ["dungfu/twitch-drops-miner"],
+      "versioning": "loose",
+      "ignoreUnstable": false
+    }
+  ]
+}

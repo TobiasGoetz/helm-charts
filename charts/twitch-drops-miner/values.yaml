@@ -2,9 +2,8 @@ replicaCount: 1
 
 image:
   repository: dungfu/twitch-drops-miner
-  # Prefer a pinned tag; latest can break unexpectedly.
-  tag: latest
-  pullPolicy: Always
+  tag: "16.dev.562e760"
+  pullPolicy: IfNotPresent
 
 service:
   type: ClusterIP

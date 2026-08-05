@@ -2,7 +2,6 @@ replicaCount: 1
 
 image:
   repository: louislam/uptime-kuma
-  # Prefer a pinned tag; see https://github.com/louislam/uptime-kuma
   tag: "2.4.0"
   pullPolicy: IfNotPresent
 
