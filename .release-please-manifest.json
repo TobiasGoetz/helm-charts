@@ -1,6 +1,6 @@
 {
-  "charts/blocky": "1.3.1",
-  "charts/home-assistant": "1.2.11",
-  "charts/twitch-drops-miner": "1.2.10",
-  "charts/uptime-kuma": "1.0.0"
+  "charts/blocky": "1.4.0",
+  "charts/home-assistant": "1.3.0",
+  "charts/twitch-drops-miner": "1.3.0",
+  "charts/uptime-kuma": "1.1.0"
 }
