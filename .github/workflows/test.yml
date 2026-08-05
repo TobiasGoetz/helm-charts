@@ -1,0 +1,176 @@
+name: Test
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  changes:
+    name: Detect changed charts
+    runs-on: ubuntu-latest
+    outputs:
+      charts: ${{ steps.detect.outputs.charts }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Detect changed charts
+        id: detect
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            base="${{ github.event.pull_request.base.sha }}"
+          else
+            base="${{ github.event.before }}"
+          fi
+
+          all=(charts/*/)
+          if (( ${#all[@]} == 0 )); then
+            echo "no charts found under charts/"
+            exit 1
+          fi
+
+          charts=()
+          if [[ -z "$base" || "$base" =~ ^0+$ ]] || ! git cat-file -e "${base}^{commit}" 2>/dev/null \
+            || git diff --name-only "$base" "${{ github.sha }}" -- .github/workflows/test.yml | grep -q .; then
+            charts=("${all[@]}")
+          else
+            mapfile -t changed < <(git diff --name-only "$base" "${{ github.sha }}" -- charts/)
+            for chart in "${all[@]}"; do
+              name="${chart#charts/}"
+              name="${name%/}"
+              for path in "${changed[@]+"${changed[@]}"}"; do
+                if [[ "$path" == charts/"$name"/* || "$path" == charts/"$name" ]]; then
+                  charts+=("$chart")
+                  break
+                fi
+              done
+            done
+          fi
+
+          json='[]'
+          if (( ${#charts[@]} > 0 )); then
+            json=$(printf '%s\n' "${charts[@]%/}" | jq -R . | jq -sc .)
+          fi
+          echo "charts=${json}" >> "$GITHUB_OUTPUT"
+          echo "Changed charts: ${json}"
+
+  lint:
+    name: Lint ${{ matrix.chart }}
+    needs: changes
+    if: needs.changes.outputs.charts != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        chart: ${{ fromJson(needs.changes.outputs.charts) }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Install Helm
+        uses: azure/setup-helm@9bc31f4ebc9c6b171d7bfbaa5d006ae7abdb4310
+        with:
+          version: "v3.14.0"
+
+      - name: Chart name
+        id: meta
+        run: echo "name=$(basename "${{ matrix.chart }}")" >> "$GITHUB_OUTPUT"
+
+      - name: Lint chart
+        run: |
+          set +e
+          helm lint "${{ matrix.chart }}"
+          code=$?
+          set -e
+          name="${{ steps.meta.outputs.name }}"
+          mkdir -p results
+          if [[ "$code" -eq 0 ]]; then
+            echo "success" > "results/${name}"
+          else
+            echo "failure" > "results/${name}"
+          fi
+          exit "$code"
+
+      - name: Upload lint result
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: lint-result-${{ steps.meta.outputs.name }}
+          path: results/
+          if-no-files-found: ignore
+
+  helm-lint:
+    name: Helm lint
+    needs: [changes, lint]
+    if: always() && !cancelled()
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download lint results
+        if: needs.changes.outputs.charts != '[]' && needs.changes.result == 'success'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: lint-result-*
+          path: results
+          merge-multiple: true
+
+      - name: Write job summary
+        env:
+          CHANGES_RESULT: ${{ needs.changes.result }}
+          LINT_RESULT: ${{ needs.lint.result }}
+          CHARTS: ${{ needs.changes.outputs.charts }}
+        run: |
+          set -euo pipefail
+
+          {
+            echo "## Helm lint"
+            echo
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [[ "$CHANGES_RESULT" != "success" ]]; then
+            echo "Chart detection failed." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+          if [[ "$CHARTS" == '[]' ]]; then
+            echo "No chart changes." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          {
+            echo "| Chart | Lint |"
+            echo "| --- | --- |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          failed=0
+          while IFS= read -r chart; do
+            [[ -z "$chart" ]] && continue
+            name="$(basename "$chart")"
+            if [[ -f "results/${name}" ]]; then
+              status="$(cat "results/${name}")"
+            else
+              status="missing"
+            fi
+            case "$status" in
+              success) cell="success" ;;
+              *) cell="failure"; failed=1 ;;
+            esac
+            echo "| \`${chart}\` | ${cell} |" >> "$GITHUB_STEP_SUMMARY"
+          done < <(echo "$CHARTS" | jq -r '.[]')
+
+          echo >> "$GITHUB_STEP_SUMMARY"
+
+          if [[ "$failed" -ne 0 || "$LINT_RESULT" != "success" ]]; then
+            echo "Linting failed." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+          echo "All changed charts passed." >> "$GITHUB_STEP_SUMMARY"
