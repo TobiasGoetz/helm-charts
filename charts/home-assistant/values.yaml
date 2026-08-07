@@ -22,7 +22,7 @@ serviceAccount:
 
 image:
   repository: ghcr.io/home-assistant/home-assistant
-  tag: "2026.8.0"
+  tag: "2026.8.1"
   pullPolicy: IfNotPresent
 
 service:
