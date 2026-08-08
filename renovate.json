@@ -3,12 +3,10 @@
   "extends": [
     "config:recommended",
     "helpers:pinGitHubActionDigests",
+    ":semanticCommits",
     ":semanticCommitTypeAll(deps)",
     ":semanticCommitScopeDisabled"
   ],
-  "semanticCommits": "enabled",
-  "dependencyDashboard": true,
-  "platformAutomerge": true,
   "packageRules": [
     {
       "description": "Automerge non-major updates",
