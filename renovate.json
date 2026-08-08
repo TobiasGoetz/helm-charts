@@ -2,10 +2,11 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended",
-    "helpers:pinGitHubActionDigests"
+    "helpers:pinGitHubActionDigests",
+    ":semanticCommitTypeAll(deps)",
+    ":semanticCommitScopeDisabled"
   ],
   "semanticCommits": "enabled",
-  "semanticCommitType": "deps",
   "dependencyDashboard": true,
   "platformAutomerge": true,
   "packageRules": [
