@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/TobiasGoetz/helm-charts/compare/home-assistant-v1.3.1...home-assistant-v1.4.0) (2026-08-16)
+
+
+### Features
+
+* add home-assistant matter scaling independant of parent chart ([db173f5](https://github.com/TobiasGoetz/helm-charts/commit/db173f517c6a23a1870153031d12198bdd4d8719))
+
 ## [1.3.1](https://github.com/TobiasGoetz/helm-charts/compare/home-assistant-v1.3.0...home-assistant-v1.3.1) (2026-08-14)
 
 
