@@ -10,7 +10,7 @@ See [values.yaml](values.yaml) for all options.
 
 <!-- x-release-please-start-version -->
 ```bash
-helm install uptime-kuma oci://ghcr.io/tobiasgoetz/helm-charts/uptime-kuma --version 1.1.2 \
+helm install uptime-kuma oci://ghcr.io/tobiasgoetz/helm-charts/uptime-kuma --version 1.1.3 \
   -n uptime-kuma --create-namespace \
   -f values.yaml
 ```
