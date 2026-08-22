@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.1.3](https://github.com/TobiasGoetz/helm-charts/compare/uptime-kuma-v1.1.2...uptime-kuma-v1.1.3) (2026-08-22)
+
+
+### Dependencies
+
+* update louislam/uptime-kuma docker tag to v2.5.3 ([#42](https://github.com/TobiasGoetz/helm-charts/issues/42)) ([18d8b73](https://github.com/TobiasGoetz/helm-charts/commit/18d8b73882c6e7e2c8116ea4e628a76f313876ed))
+
 ## [1.1.2](https://github.com/TobiasGoetz/helm-charts/compare/uptime-kuma-v1.1.1...uptime-kuma-v1.1.2) (2026-08-22)
 
 
