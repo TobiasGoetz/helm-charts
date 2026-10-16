@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.8](https://github.com/TobiasGoetz/helm-charts/compare/home-assistant-v1.4.7...home-assistant-v1.4.8) (2026-10-16)
+
+
+### Dependencies
+
+* update ghcr.io/home-assistant/home-assistant docker tag to v2026.10.2 ([#66](https://github.com/TobiasGoetz/helm-charts/issues/66)) ([4d6a9b1](https://github.com/TobiasGoetz/helm-charts/commit/4d6a9b113d92144cc8f48e952c4996c8bac2231b))
+
 ## [1.4.7](https://github.com/TobiasGoetz/helm-charts/compare/home-assistant-v1.4.6...home-assistant-v1.4.7) (2026-10-10)
 
 
