@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.15](https://github.com/TobiasGoetz/helm-charts/compare/home-assistant-v1.4.14...home-assistant-v1.4.15) (2026-10-24)
+
+
+### Dependencies
+
+* update ghcr.io/matter-js/matterjs-server docker tag to v1.5.5 ([#81](https://github.com/TobiasGoetz/helm-charts/issues/81)) ([0237fcd](https://github.com/TobiasGoetz/helm-charts/commit/0237fcde1b2dd1c48f1cc7df7c8dfa9ab5c45bc2))
+
 ## [1.4.14](https://github.com/TobiasGoetz/helm-charts/compare/home-assistant-v1.4.13...home-assistant-v1.4.14) (2026-10-23)
 
 
