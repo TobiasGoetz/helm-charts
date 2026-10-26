@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: louislam/uptime-kuma
-  tag: "2.5.7"
+  tag: "2.5.8"
   pullPolicy: IfNotPresent
 
 service:
