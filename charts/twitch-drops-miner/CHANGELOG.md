@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/TobiasGoetz/helm-charts/compare/twitch-drops-miner-v1.3.1...twitch-drops-miner-v1.3.2) (2026-11-08)
+
+
+### Bug Fixes
+
+* set tz for tdm ([6d92965](https://github.com/TobiasGoetz/helm-charts/commit/6d92965a20239fa32accdb29b7a30d1b03fc8cdf))
+
 ## [1.3.1](https://github.com/TobiasGoetz/helm-charts/compare/twitch-drops-miner-v1.3.0...twitch-drops-miner-v1.3.1) (2026-11-08)
 
 
