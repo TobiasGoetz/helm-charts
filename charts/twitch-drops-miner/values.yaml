@@ -2,7 +2,7 @@ replicaCount: 1
 
 image:
   repository: dungfu/twitch-drops-miner
-  tag: "16.dev.ff15f56"
+  tag: "16.dev@sha256:a4c1f98e3678d1ae07817d042ba884f8d3ac240ca70964db9c0576953f0742f0"
   pullPolicy: IfNotPresent
 
 service:

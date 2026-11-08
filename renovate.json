@@ -20,10 +20,11 @@
       "semanticCommitScope": null
     },
     {
-      "description": "Twitch drops miner uses 16.dev.<sha> tags",
+      "description": "16.dev.<git sha> tags do not sort. Track the moving 16.dev tag by digest.",
       "matchPackageNames": ["dungfu/twitch-drops-miner"],
-      "versioning": "loose",
-      "ignoreUnstable": false
+      "pinDigests": true,
+      "ignoreUnstable": false,
+      "allowedVersions": "/^16\\.dev$/"
     }
   ]
 }
