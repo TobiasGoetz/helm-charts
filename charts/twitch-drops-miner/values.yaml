@@ -27,7 +27,9 @@ auth:
       port: 80
 
 env:
-  # ENV_VAR: Value
+  # Twitch login fails with "unsupported browser" when TZ is unset.
+  # https://github.com/fireph/docker-twitch-drops-miner/issues/73
+  TZ: Europe/Berlin
 
 resources:
   limits:
