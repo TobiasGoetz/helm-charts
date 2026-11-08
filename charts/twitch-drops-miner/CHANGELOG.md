@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.1](https://github.com/TobiasGoetz/helm-charts/compare/twitch-drops-miner-v1.3.0...twitch-drops-miner-v1.3.1) (2026-11-08)
+
+
+### Dependencies
+
+* track twitch-drops-miner 16.dev by digest ([3fd6a29](https://github.com/TobiasGoetz/helm-charts/commit/3fd6a29ae7238d81d059d999990f32c8f5f59d04))
+
 ## [1.3.0](https://github.com/TobiasGoetz/helm-charts/compare/twitch-drops-miner-v1.2.10...twitch-drops-miner-v1.3.0) (2026-08-05)
 
 
