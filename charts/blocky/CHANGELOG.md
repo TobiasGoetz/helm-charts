@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.3](https://github.com/TobiasGoetz/helm-charts/compare/blocky-v1.4.2...blocky-v1.4.3) (2026-11-21)
+
+
+### Dependencies
+
+* update ghcr.io/0xerr0r/blocky docker tag to v0.37.0 ([#108](https://github.com/TobiasGoetz/helm-charts/issues/108)) ([658dedd](https://github.com/TobiasGoetz/helm-charts/commit/658dedd40106ea2253c36d5d76c9d4d4b8ee790e))
+
 ## [1.4.2](https://github.com/TobiasGoetz/helm-charts/compare/blocky-v1.4.1...blocky-v1.4.2) (2026-11-09)
 
 
